@@ -14,11 +14,22 @@ const inverseDocumentFrequency = (term) =>
 
 const finishedRelays = new Set()
 const termCounts = {}
+const totalTermCount = {}
 
+function updateAll () {
+  for (const relay of finishedRelays) {
+    // term-frequency by inverse-document-frequency
+
+    const tfIdf = Object.entries(termCounts[relay]).map(([term, count]) =>
+      [term, (count / totalTermCount[relay]) * inverseDocumentFrequency(term)])
+    display(relay, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([term]) => term).join(' '))
+  }
+}
+
+// See https://en.wikipedia.org/wiki/Tf-idf
 for (const relay of SEED_RELAYS) {
   createRelayId(relay)
-  // See https://en.wikipedia.org/wiki/Tf-idf
-  let totalTermCount = 0
+  totalTermCount[relay] = 0
   termCounts[relay] = {}
   getNotes(relay, ({ id, pubkey, created_at, kind, tags, content, sig }) => {
     if (kind !== 1) {
@@ -29,7 +40,7 @@ for (const relay of SEED_RELAYS) {
       if (term.length > 50) {
         continue
       }
-      ++totalTermCount
+      ++totalTermCount[relay]
       term = term.toLowerCase()
       if (term in termCounts[relay]) {
         ++termCounts[relay][term]
@@ -40,12 +51,6 @@ for (const relay of SEED_RELAYS) {
     }
   }, () => {
     finishedRelays.add(relay)
-    for (const r of finishedRelays) {
-      // term-frequency by inverse-document-frequency
-
-      const tfIdf = Object.entries(termCounts[r]).map(([term, count]) =>
-        [term, (count / totalTermCount) * inverseDocumentFrequency(term)])
-      display(r, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([term]) => term).join(' '))
-    }
+    updateAll()
   })
 }
