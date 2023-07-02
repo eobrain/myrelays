@@ -10,6 +10,12 @@ export function createRelayId (relay) {
 }
 
 export function display (relay, vibe) {
-  $relays.insertAdjacentHTML('beforeend',
-    `<tr><th>${relay}</th><td>${vibe}</td></tr>`)
+  const id = relayIds[relay]
+  const $vibe = document.getElementById(id)
+  if ($vibe) {
+    $vibe.innerHTML = vibe
+  } else {
+    $relays.insertAdjacentHTML('beforeend',
+            `<tr><th>${relay}</th><td id=${id}>${vibe}</td></tr>`)
+  }
 }
