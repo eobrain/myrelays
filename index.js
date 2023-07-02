@@ -35,7 +35,7 @@ for (const relay of SEED_RELAYS) {
     if (kind !== 1) {
       throw new Error(`Unexpected kind "${kind}"`)
     }
-    const terms = content.split(/\s+/)
+    const terms = content.split(/\W+/)
     for (let term of terms) {
       if (term.length > 50) {
         continue
