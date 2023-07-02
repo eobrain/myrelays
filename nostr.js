@@ -22,7 +22,7 @@ export function closeSockets () {
   }
 }
 
-export function getNotes (relay, callback, eose) {
+export function getEvents (relay, kinds, callback, eose) {
   const socket = new WebSocket(relay)
   sockets.push(socket)
 
@@ -33,7 +33,7 @@ export function getNotes (relay, callback, eose) {
     socket.send(JSON.stringify(['REQ', subscription, {
       // "ids": <a list of event ids or prefixes>,
       // "authors": <a list of pubkeys or prefixes, the pubkey of an event must be one of these>,
-      kinds: [1]
+      kinds
       // "#e": <a list of event ids that are referenced in an "e" tag>,
       // "#p": <a list of pubkeys that are referenced in a "p" tag>,
       // "since": <an integer unix timestamp, events must be newer than this to pass>,
