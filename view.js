@@ -1,4 +1,4 @@
-/* global $relays */
+/* global $relays $freeze */
 
 const countIds = []
 const vibeIds = []
@@ -24,4 +24,8 @@ export function display (relay, count, vibe) {
     $relays.insertAdjacentHTML('beforeend',
             `<tr><th>${relay}</th><td id=${countId}>${count}</td><td id=${vibeId}>${vibe}</td></tr>`)
   }
+}
+
+export function onFreeze (f) {
+  $freeze.onclick = f
 }

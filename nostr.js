@@ -14,8 +14,17 @@ export const SEED_RELAYS = [
 
 /* global WebSocket crypto */
 
+const sockets = []
+
+export function closeSockets () {
+  for (const socket of sockets) {
+    socket.close()
+  }
+}
+
 export function getNotes (relay, callback, eose) {
   const socket = new WebSocket(relay)
+  sockets.push(socket)
 
   const subscription = `myrelays-${crypto.randomUUID()}`
 

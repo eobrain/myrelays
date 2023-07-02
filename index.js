@@ -1,5 +1,5 @@
-import { SEED_RELAYS, getNotes } from './nostr.js'
-import { createRelayId, display, getRelayCount } from './view.js'
+import { SEED_RELAYS, getNotes, closeSockets } from './nostr.js'
+import { createRelayId, display, getRelayCount, onFreeze } from './view.js'
 
 const documentsContainingTerm = new Map()
 function documentContainsTerm (relay, term) {
@@ -58,3 +58,5 @@ for (const relay of SEED_RELAYS) {
     updateAll()
   })
 }
+
+onFreeze(() => closeSockets())
