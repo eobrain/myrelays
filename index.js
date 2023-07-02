@@ -59,4 +59,15 @@ for (const relay of SEED_RELAYS) {
   })
 }
 
-onFreeze(() => closeSockets())
+onFreeze(() => {
+  closeSockets()
+  // Remove references to allow for garbage collection
+  finishedRelays.clear()
+  documentsContainingTerm.clear()
+  for (const object of [termCounts, totalTermCount, noteCount]) {
+    for (const prop of Object.getOwnPropertyNames(object)) {
+      delete object[prop]
+    }
+  }
+}
+)
