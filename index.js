@@ -49,6 +49,7 @@ for (const relay of SEED_RELAYS) {
       }
       documentContainsTerm(relay, term)
     }
+    updateAll()
   }, () => {
     finishedRelays.add(relay)
     updateAll()
