@@ -1,17 +1,5 @@
 import { SEED_RELAYS, getNotes } from './nostr.js'
-
-/* global $relays */
-
-const relayIds = []
-let documentCount = 0
-function createRelayId (relay) {
-  relayIds[relay] = `relay${++documentCount}`
-}
-
-function display (relay, vibe) {
-  $relays.insertAdjacentHTML('beforeend',
-    `<tr><th>${relay}</th><td>${vibe}</td></tr>`)
-}
+import { createRelayId, display, getRelayCount } from './view.js'
 
 const documentsContainingTerm = new Map()
 function documentContainsTerm (relay, term) {
@@ -22,7 +10,7 @@ function documentContainsTerm (relay, term) {
   }
 }
 const inverseDocumentFrequency = (term) =>
-  Math.log(documentCount / documentsContainingTerm.get(term).size)
+  Math.log(getRelayCount() / documentsContainingTerm.get(term).size)
 
 const finishedRelays = new Set()
 const termCounts = {}
