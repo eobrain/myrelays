@@ -1,12 +1,18 @@
 export const SEED_RELAYS = [
-  'relay.n057r.club',
+  'nostr.1f52b.xyz',
+  'nostr.bitocial.xyz',
+  'nostr.lu.ke',
+  'nostr.naut.social',
+  'nostr.sandwich.farm',
+  'nostr.sidnlabs.nl',
   'nostramsterdam.vpx.moe',
   'relay.mostr.pub',
-  'nostr.sandwich.farm',
-  'nostr.lu.ke',
-  'nostr.1f52b.xyz'
-  // 'nostr.bitocial.xyz'
+  'relay.n057r.club',
+  'relay.nostr.hach.re',
+  'relay.snort.social'
 ].map(host => `wss://${host}`)
+
+/* global WebSocket crypto */
 
 export function getNotes (relay, callback, eose) {
   const socket = new WebSocket(relay)
