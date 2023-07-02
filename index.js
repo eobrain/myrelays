@@ -1,3 +1,5 @@
+/* global $relays */
+
 function getNotes (relay, callback, eose) {
   const socket = new WebSocket(relay)
 
@@ -48,21 +50,44 @@ function getNotes (relay, callback, eose) {
   })
 }
 
-const wordDict = {}
+const SEED_RELAYS = [
+  'wss://relay.n057r.club',
+  'wss://nostramsterdam.vpx.moe',
+  'nostr.bitocial.xyz'
+]
 
-getNotes('wss://relay.n057r.club', ({ id, pubkey, created_at, kind, tags, content, sig }) => {
-  if (kind !== 1) {
-    throw new Error(`Unexpected kind "${kind}"`)
-  }
-  const words = content.split(/\s+/)
-  for (let word of words) {
-    word = word.toLowerCase()
-    if (word in wordDict) {
-      ++wordDict[word]
-    } else {
-      wordDict[word] = 1
+const relayIds = []
+let nextRelayId = 0
+function createRelayId (relay) {
+  relayIds[relay] = `relay${++nextRelayId}`
+}
+
+function display (relay, vibe) {
+  $relays.insertAdjacentHTML('beforeend',
+    `<tr><th>${relay}</th><td>${vibe}</td></tr>`)
+}
+
+for (const relay of SEED_RELAYS) {
+  createRelayId(relay)
+  // See https://en.wikipedia.org/wiki/Tf-idf
+  let totalTermCount = 0
+  const termCounts = {}
+  getNotes(relay, ({ id, pubkey, created_at, kind, tags, content, sig }) => {
+    if (kind !== 1) {
+      throw new Error(`Unexpected kind "${kind}"`)
     }
-  }
-}, () => {
-  console.log(Object.entries(wordDict).sort((a, b) => b[1] - a[1]).slice(0, 100).map(e => e[0]))
-})
+    const terms = content.split(/\s+/)
+    for (let term of terms) {
+      ++totalTermCount
+      term = term.toLowerCase()
+      if (term in termCounts) {
+        ++termCounts[term]
+      } else {
+        termCounts[term] = 1
+      }
+    }
+  }, () => {
+    const termFrequencies = Object.entries(termCounts).map(([term, count]) => [term, count / totalTermCount]).sort((a, b) => b[1] - a[1])
+    display(relay, termFrequencies.slice(0, 100).map(([term]) => term).join(' '))
+  })
+}
