@@ -26,6 +26,9 @@ for (const relay of SEED_RELAYS) {
     }
     const terms = content.split(/\s+/)
     for (let term of terms) {
+      if (term.length > 50) {
+        continue
+      }
       ++totalTermCount
       term = term.toLowerCase()
       if (term in termCounts[relay]) {
@@ -42,7 +45,7 @@ for (const relay of SEED_RELAYS) {
 
       const tfIdf = Object.entries(termCounts[r]).map(([term, count]) =>
         [term, (count / totalTermCount) * inverseDocumentFrequency(term)])
-      display(r, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
+      display(r, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([term]) => term).join(' '))
     }
   })
 }
