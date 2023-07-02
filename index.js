@@ -24,11 +24,14 @@ function documentContainsTerm (relay, term) {
 const inverseDocumentFrequency = (term) =>
   Math.log(documentCount / documentsContainingTerm.get(term).size)
 
+const finishedRelays = new Set()
+const termCounts = {}
+
 for (const relay of SEED_RELAYS) {
   createRelayId(relay)
   // See https://en.wikipedia.org/wiki/Tf-idf
   let totalTermCount = 0
-  const termCounts = {}
+  termCounts[relay] = {}
   getNotes(relay, ({ id, pubkey, created_at, kind, tags, content, sig }) => {
     if (kind !== 1) {
       throw new Error(`Unexpected kind "${kind}"`)
@@ -37,17 +40,21 @@ for (const relay of SEED_RELAYS) {
     for (let term of terms) {
       ++totalTermCount
       term = term.toLowerCase()
-      if (term in termCounts) {
-        ++termCounts[term]
+      if (term in termCounts[relay]) {
+        ++termCounts[relay][term]
       } else {
-        termCounts[term] = 1
+        termCounts[relay][term] = 1
       }
       documentContainsTerm(relay, term)
     }
   }, () => {
-    // term-frequency by inverse-document-frequency
-    const tfIdf = Object.entries(termCounts).map(([term, count]) =>
-      [term, (count / totalTermCount) * inverseDocumentFrequency(term)])
-    display(relay, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
+    finishedRelays.add(relay)
+    for (const r of finishedRelays) {
+      // term-frequency by inverse-document-frequency
+
+      const tfIdf = Object.entries(termCounts[r]).map(([term, count]) =>
+        [term, (count / totalTermCount) * inverseDocumentFrequency(term)])
+      display(r, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
+    }
   })
 }
