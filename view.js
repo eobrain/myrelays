@@ -1,21 +1,27 @@
 /* global $relays */
 
-const relayIds = []
+const countIds = []
+const vibeIds = []
 let relayCount = 0
 
 export const getRelayCount = () => relayCount
 
 export function createRelayId (relay) {
-  relayIds[relay] = `relay${++relayCount}`
+  ++relayCount
+  vibeIds[relay] = `vibe${relayCount}`
+  countIds[relay] = `notes${relayCount}`
 }
 
-export function display (relay, vibe) {
-  const id = relayIds[relay]
-  const $vibe = document.getElementById(id)
+export function display (relay, count, vibe) {
+  const vibeId = vibeIds[relay]
+  const countId = countIds[relay]
+  const $vibe = document.getElementById(vibeId)
+  const $count = document.getElementById(countId)
   if ($vibe) {
     $vibe.innerHTML = vibe
+    $count.innerHTML = count
   } else {
     $relays.insertAdjacentHTML('beforeend',
-            `<tr><th>${relay}</th><td id=${id}>${vibe}</td></tr>`)
+            `<tr><th>${relay}</th><td id=${countId}>${count}</td><td id=${vibeId}>${vibe}</td></tr>`)
   }
 }

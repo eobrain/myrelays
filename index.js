@@ -15,6 +15,7 @@ const inverseDocumentFrequency = (term) =>
 const finishedRelays = new Set()
 const termCounts = {}
 const totalTermCount = {}
+const noteCount = {}
 
 function updateAll () {
   for (const relay of finishedRelays) {
@@ -22,7 +23,7 @@ function updateAll () {
 
     const tfIdf = Object.entries(termCounts[relay]).map(([term, count]) =>
       [term, (count / totalTermCount[relay]) * inverseDocumentFrequency(term)])
-    display(relay, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([term]) => term).join(' '))
+    display(relay, noteCount[relay], tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([term]) => term).join(' '))
   }
 }
 
@@ -30,11 +31,13 @@ function updateAll () {
 for (const relay of SEED_RELAYS) {
   createRelayId(relay)
   totalTermCount[relay] = 0
+  noteCount[relay] = 0
   termCounts[relay] = {}
   getNotes(relay, ({ id, pubkey, created_at, kind, tags, content, sig }) => {
     if (kind !== 1) {
       throw new Error(`Unexpected kind "${kind}"`)
     }
+    ++noteCount[relay]
     const terms = content.split(/\W+/)
     for (let term of terms) {
       if (term.length > 50) {
