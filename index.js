@@ -1,4 +1,4 @@
-import { SEED_RELAYS, getEvents, closeSockets } from './nostr.js'
+import { nostrWatchRelays, getEvents, closeSockets } from './nostr.js'
 import { createRelayId, display, getRelayCount, onFreeze } from './view.js'
 
 const documentsContainingTerm = new Map()
@@ -112,7 +112,7 @@ function getRecommendServer (relay, content) {
 }
 
 // See https://en.wikipedia.org/wiki/Tf-idf
-for (const relay of SEED_RELAYS) {
+for (const relay of await nostrWatchRelays()) {
   connectToRelay(relay)
 }
 

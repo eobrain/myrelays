@@ -1,16 +1,5 @@
-export const SEED_RELAYS = [
-  'nostr.1f52b.xyz',
-  'nostr.bitocial.xyz',
-  'nostr.lu.ke',
-  'nostr.naut.social',
-  'nostr.sandwich.farm',
-  'nostr.sidnlabs.nl',
-  'nostramsterdam.vpx.moe',
-  'relay.mostr.pub',
-  'relay.n057r.club',
-  'relay.nostr.hach.re',
-  'relay.snort.social'
-].map(host => `wss://${host}`)
+export const nostrWatchRelays = async () =>
+  (await fetch('https://api.nostr.watch/v1/online')).json()
 
 /* global WebSocket crypto */
 
@@ -46,7 +35,7 @@ export function getEvents (relay, kinds, callback, eose) {
         // "#p": <a list of pubkeys that are referenced in a "p" tag>,
         // "since": <an integer unix timestamp, events must be newer than this to pass>,
         // "until": <an integer unix timestamp, events must be older than this to pass>,
-        limit: 200
+        limit: 50
       }]))
     }
   })
@@ -71,12 +60,17 @@ export function getEvents (relay, kinds, callback, eose) {
       }
       case 'NOTICE': {
         const [notice] = rest
-        alert(notice)
+        console.log(`Ignoring message NOTICE ${notice} from ${relay}`)
         break
       }
       case 'AUTH': {
         const [something] = rest
         console.log(`Ignoring message AUTH ${something} from ${relay}`)
+        break
+      }
+      case 'OK': {
+        const [, , something] = rest
+        console.log(`Ignoring message OK ${something} from ${relay}`)
         break
       }
       default:
