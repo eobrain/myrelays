@@ -27,7 +27,7 @@ function updateAll () {
   }
 }
 
-function getNote (relay, content) {
+function getTextNote (relay, content) {
   ++noteCount[relay]
   const terms = content.split(/\W+/)
   for (let term of terms) {
@@ -46,16 +46,28 @@ function getNote (relay, content) {
   updateAll()
 }
 
-// See https://en.wikipedia.org/wiki/Tf-idf
-for (const relay of SEED_RELAYS) {
+const knownRelays = new Set()
+const activeRelays = new Set()
+
+function connectToRelay (relay) {
+  if (knownRelays.has(relay)) {
+    return
+  }
+  activeRelays.add(relay)
+  console.log(`Connecting to      ${relay}`)
+  console.log(activeRelays)
+  knownRelays.add(relay)
   createRelayId(relay)
   totalTermCount[relay] = 0
   noteCount[relay] = 0
   termCounts[relay] = {}
-  getEvents(relay, [1], ({ id, pubkey, created_at, kind, tags, content, sig }) => {
+  getEvents(relay, [1, 2], ({ id, pubkey, created_at, kind, tags, content, sig }) => {
     switch (kind) {
       case 1:
-        getNote(relay, content)
+        getTextNote(relay, content)
+        break
+      case 2:
+        getRecommendServer(relay, content)
         break
       default:
         throw new Error(`Unexpected kind "${kind}"`)
@@ -63,13 +75,26 @@ for (const relay of SEED_RELAYS) {
   }, () => {
     finishedRelays.add(relay)
     updateAll()
+    activeRelays.delete(relay)
+    console.log(`Disconnecting from ${relay}`)
+    console.log(activeRelays)
   })
+}
+
+function getRecommendServer (relay, content) {
+  connectToRelay(content)
+}
+
+// See https://en.wikipedia.org/wiki/Tf-idf
+for (const relay of SEED_RELAYS) {
+  connectToRelay(relay)
 }
 
 onFreeze(() => {
   closeSockets()
   // Remove references to allow for garbage collection
   finishedRelays.clear()
+  knownRelays.clear()
   documentsContainingTerm.clear()
   for (const object of [termCounts, totalTermCount, noteCount]) {
     for (const prop of Object.getOwnPropertyNames(object)) {

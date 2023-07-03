@@ -38,7 +38,7 @@ export function getEvents (relay, kinds, callback, eose) {
       // "#p": <a list of pubkeys that are referenced in a "p" tag>,
       // "since": <an integer unix timestamp, events must be newer than this to pass>,
       // "until": <an integer unix timestamp, events must be older than this to pass>,
-      // "limit": <maximum number of events to be returned in the initial query>
+      // limit: 10
     }]))
   })
 
@@ -59,6 +59,8 @@ export function getEvents (relay, kinds, callback, eose) {
         if (receivedSubsription !== subscription) {
           throw new Error(`Unexpected subscription "${rest[0]}"`)
         }
+        socket.send(JSON.stringify(['CLOSE', subscription]))
+        socket.close()
         eose()
         break
       }
