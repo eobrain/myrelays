@@ -81,7 +81,7 @@ function connectToRelay (relay) {
   noteCount[relay] = 0
   termCounts[relay] = {}
   try {
-    getEvents(relay, [1, 2], ({ id, pubkey, created_at, kind, tags, content, sig }) => {
+    getEvents(relay, [1, 2], ({ /* id, pubkey, created_at, */ kind, /* tags, */ content /*, sig */ }) => {
       try {
         switch (kind) {
           case 1:
