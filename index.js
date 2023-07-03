@@ -23,15 +23,24 @@ function updateAll () {
 
     const tfIdf = Object.entries(termCounts[relay]).map(([term, count]) =>
       [term, (count / totalTermCount[relay]) * inverseDocumentFrequency(term)])
-    display(relay, noteCount[relay], tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 10).map(([term]) => term).join(' '))
+    display(relay, noteCount[relay], tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
+  }
+}
+
+function isUrl (term) {
+  try {
+    URL(term)
+    return true
+  } catch (e) {
+    return false
   }
 }
 
 function getTextNote (relay, content) {
   ++noteCount[relay]
-  const terms = content.split(/\W+/)
+  const terms = content.split(/[\s【】!()[\]{};'",?]+/)
   for (let term of terms) {
-    if (term.length > 50) {
+    if (term.length > 50 || isUrl(term)) {
       continue
     }
     ++totalTermCount[relay]
@@ -49,6 +58,16 @@ function getTextNote (relay, content) {
 const knownRelays = new Set()
 const activeRelays = new Set()
 
+function finish (relay) {
+  if (noteCount[relay] > 0) {
+    finishedRelays.add(relay)
+    updateAll()
+  }
+  activeRelays.delete(relay)
+  console.log(`Disconnecting from ${relay}`)
+  console.log(activeRelays)
+}
+
 function connectToRelay (relay) {
   if (knownRelays.has(relay)) {
     return
@@ -61,27 +80,34 @@ function connectToRelay (relay) {
   totalTermCount[relay] = 0
   noteCount[relay] = 0
   termCounts[relay] = {}
-  getEvents(relay, [1, 2], ({ id, pubkey, created_at, kind, tags, content, sig }) => {
-    switch (kind) {
-      case 1:
-        getTextNote(relay, content)
-        break
-      case 2:
-        getRecommendServer(relay, content)
-        break
-      default:
-        throw new Error(`Unexpected kind "${kind}"`)
-    }
-  }, () => {
-    finishedRelays.add(relay)
-    updateAll()
-    activeRelays.delete(relay)
-    console.log(`Disconnecting from ${relay}`)
-    console.log(activeRelays)
-  })
+  try {
+    getEvents(relay, [1, 2], ({ id, pubkey, created_at, kind, tags, content, sig }) => {
+      try {
+        switch (kind) {
+          case 1:
+            getTextNote(relay, content)
+            break
+          case 2:
+            getRecommendServer(relay, content)
+            break
+          default:
+            throw new Error(`Unexpected kind "${kind}"`)
+        }
+      } catch (e) {
+        finish(relay)
+      }
+    }, () => {
+      finish(relay)
+    })
+  } catch (e) {
+    finish(relay)
+  }
 }
 
 function getRecommendServer (relay, content) {
+  if (!content.match(/^wss:\/\//)) {
+    return
+  }
   connectToRelay(content)
 }
 
@@ -101,5 +127,4 @@ onFreeze(() => {
       delete object[prop]
     }
   }
-}
-)
+})
