@@ -24,10 +24,17 @@ export function display (relay, count, speed, vibe) {
     $count.innerHTML = count
   } else {
     $relays.insertAdjacentHTML('beforeend',
-            `<tr><th>${relay}</th><td id=${countId}>${count}</td><td>${speed !== undefined ? speed : ''}</td><td id=${vibeId}>${vibe}</td></tr>`)
+      `<tr><th>${relay}</th><td id=${countId}>${count}</td><td>${speed !== undefined ? speed : ''}</td><td id=${vibeId}>${vibe}</td></tr>`)
   }
+  sortRelays()
 }
 
 export function onFreeze (f) {
   $freeze.onclick = f
+}
+
+function sortRelays () {
+  Array.from($relays.querySelectorAll('tr'))
+    .sort(($rowA, $rowB) => Number($rowB.children[2].textContent) - Number($rowA.children[2].textContent))
+    .forEach(tr => $relays.appendChild(tr))
 }
