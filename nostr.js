@@ -4,7 +4,11 @@ const shuffle = xs => xs
   .map(({ x }) => x)
 
 export const nostrWatchRelays = async () =>
-  shuffle(await ((await fetch('https://api.nostr.watch/v1/public')).json()))
+  shuffle(
+    (await (
+      (await fetch('https://api.nostr.watch/v1/public')
+      ).json())
+    ).slice(0, 10))
 
 /* global WebSocket crypto */
 
@@ -66,8 +70,10 @@ export function getEvents (relay, kinds, callback, eose) {
         }
         const elapsedMs = startMs ? Date.now() - startMs : undefined
         checkSubsription(receivedSubscription)
-        // socket.send(JSON.stringify(['CLOSE', subscription]))
-        // socket.close()
+        // setTimeout(() => {
+        //  socket.send(JSON.stringify(['CLOSE', subscription]))
+        //  socket.close()
+        // }, 10000)
         eose(elapsedMs)
         break
       }

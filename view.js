@@ -1,6 +1,6 @@
 /* global $relays $freeze $avoid */
 
-const WORDS_TO_DISPLAY = 3
+const WORDS_TO_DISPLAY = 4
 
 const ids = []
 let relayCount = 0
