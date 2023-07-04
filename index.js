@@ -1,6 +1,8 @@
 import { nostrWatchRelays, getEvents, closeSockets } from './nostr.js'
 import { createRelayId, display, getRelayCount, onFreeze } from './view.js'
 
+const WORDS_TO_DISPLAY = 3
+
 const documentsContainingTerm = new Map()
 function documentContainsTerm (relay, term) {
   if (documentsContainingTerm.has(term)) {
@@ -24,7 +26,11 @@ function updateAll (elapsedMs) {
     const tfIdf = Object.entries(termCounts[relay]).map(([term, count]) =>
       [term, (count / totalTermCount[relay]) * inverseDocumentFrequency(term)])
     const speed = elapsedMs ? totalTermCount[relay] / elapsedMs : undefined
-    display(relay, totalTermCount[relay] / noteCount[relay], speed, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
+    display(
+      relay,
+      totalTermCount[relay] / noteCount[relay],
+      speed,
+      tfIdf.sort((a, b) => b[1] - a[1]).slice(0, WORDS_TO_DISPLAY).map(([term]) => term).join(' '))
   }
 }
 
@@ -40,7 +46,7 @@ function isUrl (term) {
 function getTextNote (relay, content) {
   ++noteCount[relay]
   // const terms = content.split(/[\s【】!()[\]{};'",?]+/)
-  const terms = content.split(/\W+/)
+  const terms = content.split(/\W+/).filter(w => w)
   for (let term of terms) {
     if (term.length > 50 || isUrl(term)) {
       continue
