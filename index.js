@@ -9,9 +9,16 @@ function documentContainsTerm (relay, term) {
     documentsContainingTerm.set(term, new Set([relay]))
   }
 }
-const inverseDocumentFrequency = (term) =>
-  Math.log(getRelayCount() / documentsContainingTerm.get(term).size)
 
+/** Standard IDF */
+// const inverseDocumentFrequency = (term) =>
+//  Math.log(getRelayCount() / documentsContainingTerm.get(term).size)
+
+/** Probabilistic IDF */
+const inverseDocumentFrequency = (term) => {
+  const nt = documentsContainingTerm.get(term).size
+  return Math.log((getRelayCount() - nt) / nt)
+}
 const finishedRelays = new Set()
 const termCounts = {}
 const totalTermCount = {}
@@ -43,7 +50,7 @@ function isUrl (term) {
 
 function getTextNote (relay, content) {
   ++noteCount[relay]
-  const terms = content.split(/[\s【】!()[\]{};'",?]+/).filter(w => w)
+  const terms = content.split(/[\s【】!()[\]{};'",?<>|#]+/).filter(w => w)
   // const terms = content.split(/\W+/).filter(w => w)
   for (let term of terms) {
     if (term.length > 50 || isUrl(term)) {
