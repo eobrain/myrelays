@@ -33,8 +33,11 @@ export function onFreeze (f) {
   $freeze.onclick = f
 }
 
+const score = $row =>
+  Number($row.children[2].textContent)
+
 function sortRelays () {
   Array.from($relays.querySelectorAll('tr'))
-    .sort(($rowA, $rowB) => Number($rowB.children[2].textContent) - Number($rowA.children[2].textContent))
+    .sort(($rowA, $rowB) => score($rowB) - score($rowA))
     .forEach(tr => $relays.appendChild(tr))
 }
