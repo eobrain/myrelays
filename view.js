@@ -12,8 +12,9 @@ export function createRelayId (relay) {
   countIds[relay] = `notes${relayCount}`
 }
 
-export function display (relay, count, vibe) {
+export function display (relay, count, speed, vibe) {
   count = Math.round(count)
+  speed = Math.round(speed * 10)
   const vibeId = vibeIds[relay]
   const countId = countIds[relay]
   const $vibe = document.getElementById(vibeId)
@@ -23,7 +24,7 @@ export function display (relay, count, vibe) {
     $count.innerHTML = count
   } else {
     $relays.insertAdjacentHTML('beforeend',
-            `<tr><th>${relay}</th><td id=${countId}>${count}</td><td id=${vibeId}>${vibe}</td></tr>`)
+            `<tr><th>${relay}</th><td id=${countId}>${count}</td><td>${speed !== undefined ? speed : ''}</td><td id=${vibeId}>${vibe}</td></tr>`)
   }
 }
 

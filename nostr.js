@@ -24,6 +24,7 @@ export function getEvents (relay, kinds, callback, eose) {
     }
   }
 
+  let startMs
   // Connection opened
   socket.addEventListener('open', (event) => {
     for (const kind of kinds) {
@@ -46,16 +47,23 @@ export function getEvents (relay, kinds, callback, eose) {
     switch (first) {
       case 'EVENT': {
         const [receivedSubscription, event] = rest
+        if (!startMs && receivedSubscription === subscription + 1) {
+          startMs = Date.now()
+        }
         checkSubsription(receivedSubscription)
         callback(event)
         break
       }
       case 'EOSE': {
         const [receivedSubscription] = rest
+        if (receivedSubscription !== subscription + 1) {
+          break
+        }
+        const elapsedMs = startMs ? Date.now() - startMs : undefined
         checkSubsription(receivedSubscription)
-        socket.send(JSON.stringify(['CLOSE', subscription]))
-        socket.close()
-        eose()
+        // socket.send(JSON.stringify(['CLOSE', subscription]))
+        // socket.close()
+        eose(elapsedMs)
         break
       }
       case 'NOTICE': {

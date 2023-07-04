@@ -17,13 +17,14 @@ const termCounts = {}
 const totalTermCount = {}
 const noteCount = {}
 
-function updateAll () {
+function updateAll (elapsedMs) {
   for (const relay of finishedRelays) {
     // term-frequency by inverse-document-frequency
 
     const tfIdf = Object.entries(termCounts[relay]).map(([term, count]) =>
       [term, (count / totalTermCount[relay]) * inverseDocumentFrequency(term)])
-    display(relay, totalTermCount[relay] / noteCount[relay], tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
+    const speed = elapsedMs ? totalTermCount[relay] / elapsedMs : undefined
+    display(relay, totalTermCount[relay] / noteCount[relay], speed, tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
   }
 }
 
@@ -59,10 +60,10 @@ function getTextNote (relay, content) {
 const knownRelays = new Set()
 const activeRelays = new Set()
 
-function finish (relay) {
+function finish (relay, elapsedMs) {
   if (noteCount[relay] > 0) {
     finishedRelays.add(relay)
-    updateAll()
+    updateAll(elapsedMs)
   }
   activeRelays.delete(relay)
   console.log(`Disconnecting from ${relay}`)
@@ -97,8 +98,8 @@ function connectToRelay (relay) {
       } catch (e) {
         finish(relay)
       }
-    }, () => {
-      finish(relay)
+    }, (elapsedMs) => {
+      finish(relay, elapsedMs)
     })
   } catch (e) {
     finish(relay)
