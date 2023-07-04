@@ -1,5 +1,10 @@
+const shuffle = xs => xs
+  .map(x => ({ x, sort: Math.random() }))
+  .sort((a, b) => a.sort - b.sort)
+  .map(({ x }) => x)
+
 export const nostrWatchRelays = async () =>
-  (await fetch('https://api.nostr.watch/v1/online')).json()
+  shuffle(await ((await fetch('https://api.nostr.watch/v1/public')).json()))
 
 /* global WebSocket crypto */
 
