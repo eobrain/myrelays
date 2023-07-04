@@ -23,7 +23,7 @@ function updateAll () {
 
     const tfIdf = Object.entries(termCounts[relay]).map(([term, count]) =>
       [term, (count / totalTermCount[relay]) * inverseDocumentFrequency(term)])
-    display(relay, noteCount[relay], tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
+    display(relay, totalTermCount[relay] / noteCount[relay], tfIdf.sort((a, b) => b[1] - a[1]).slice(0, 20).map(([term]) => term).join(' '))
   }
 }
 
@@ -38,7 +38,8 @@ function isUrl (term) {
 
 function getTextNote (relay, content) {
   ++noteCount[relay]
-  const terms = content.split(/[\s【】!()[\]{};'",?]+/)
+  // const terms = content.split(/[\s【】!()[\]{};'",?]+/)
+  const terms = content.split(/\W+/)
   for (let term of terms) {
     if (term.length > 50 || isUrl(term)) {
       continue

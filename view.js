@@ -13,6 +13,7 @@ export function createRelayId (relay) {
 }
 
 export function display (relay, count, vibe) {
+  count = Math.round(count)
   const vibeId = vibeIds[relay]
   const countId = countIds[relay]
   const $vibe = document.getElementById(vibeId)
