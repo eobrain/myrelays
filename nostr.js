@@ -8,7 +8,7 @@ export const nostrWatchRelays = async () =>
     (await (
       (await fetch('https://api.nostr.watch/v1/public')
       ).json())
-    ).slice(0, 10))
+    ).slice(0, 20))
 
 /* global WebSocket crypto */
 
