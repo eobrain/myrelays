@@ -6,11 +6,16 @@
     <body>
         <h1>Nostr Relays</h1>
         <button id="$freeze">Freeze</button>
+        <label>
+            Words to avoid
+            <input id="$avoid" type="text" value="airdrop bitcoin zap apecoin"/>
+          </label>
         <table id="$relays">
             <tr>
                 <th>Relay</th>
                 <th>Average Note Size</th>
                 <th>Speed</th>
+                <th>Avoid</th>
                 <th>Characteristics words</th>
             </tr>
 
