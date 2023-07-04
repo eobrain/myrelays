@@ -48,8 +48,14 @@ export function onFreeze (f) {
   $freeze.onclick = f
 }
 
+const cellValue = ($row, index) =>
+  Number($row.children[index].textContent)
+
+const speedCellValue = $row => cellValue($row, 2)
+const avoidCellValue = $row => cellValue($row, 3)
+
 const score = $row =>
-  Number($row.children[2].textContent)
+  speedCellValue($row) - 1000 * avoidCellValue($row)
 
 function sortRelays () {
   Array.from($relays.querySelectorAll('tr'))
