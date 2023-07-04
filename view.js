@@ -1,6 +1,6 @@
 /* global $relays $freeze $avoid */
 
-const WORDS_TO_DISPLAY = 4
+const WORDS_TO_DISPLAY = 3
 
 const ids = []
 let relayCount = 0
@@ -34,7 +34,7 @@ export function display (relay, count, speed, tfIdf) {
         avoidScore += tfIdfDictionary[avoidWord]
       }
     }
-    avoidScore = Math.round(10000 * avoidScore / wordsToAvoid.length)
+    avoidScore = Math.round(100000 * avoidScore / wordsToAvoid.length)
   }
   if ($vibe) {
     $count.innerHTML = count
@@ -63,7 +63,7 @@ const speedCellValue = $row => cellValue($row, 2)
 const avoidCellValue = $row => cellValue($row, 3)
 
 const score = $row =>
-  Math.log(1 + speedCellValue($row)) - 10 * avoidCellValue($row)
+  10 * Math.log(1 + speedCellValue($row)) - avoidCellValue($row)
 
 function sortRelays () {
   Array.from($relays.querySelectorAll('tr'))
