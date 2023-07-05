@@ -94,24 +94,26 @@ function connectToRelay (relay) {
   noteCount[relay] = 0
   termCounts[relay] = {}
   try {
-    getEvents(relay, [1, 2], ({ /* id, pubkey, created_at, */ kind, /* tags, */ content /*, sig */ }) => {
-      try {
-        switch (kind) {
-          case 1:
-            getTextNote(relay, content)
-            break
-          case 2:
-            getRecommendServer(relay, content)
-            break
-          default:
-            throw new Error(`Unexpected kind "${kind}"`)
+    getEvents(relay, [1, 2],
+      async ({ /* id, pubkey, created_at, */ kind, /* tags, */ content /*, sig */ }) => {
+        try {
+          switch (kind) {
+            case 1:
+              getTextNote(relay, content)
+              break
+            case 2:
+              getRecommendServer(relay, content)
+              break
+            default:
+              throw new Error(`Unexpected kind "${kind}"`)
+          }
+        } catch (e) {
+          finish(relay)
         }
-      } catch (e) {
-        finish(relay)
-      }
-    }, (elapsedMs) => {
-      finish(relay, elapsedMs)
-    })
+      },
+      async (elapsedMs) => {
+        finish(relay, elapsedMs)
+      })
   } catch (e) {
     finish(relay)
   }
