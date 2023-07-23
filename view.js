@@ -47,6 +47,9 @@ export function display (relay, domain, speed, tfIdf) {
   sortRelays()
 }
 
+const SPEED_COLUMN = 1
+const AVOID_COLUMN = 2
+
 export function onFreeze (f) {
   $freeze.onclick = f
 }
@@ -54,11 +57,11 @@ export function onFreeze (f) {
 const cellValue = ($row, index) =>
   Number($row.children[index].textContent)
 
-const speedCellValue = $row => cellValue($row, 2)
-const avoidCellValue = $row => cellValue($row, 3)
+const speedCellValue = $row => cellValue($row, SPEED_COLUMN)
+const avoidCellValue = $row => cellValue($row, AVOID_COLUMN)
 
 const score = $row =>
-  10 * Math.log(1 + speedCellValue($row)) - avoidCellValue($row)
+  Math.log(1 + speedCellValue($row)) / 10 - avoidCellValue($row)
 
 function sortRelays () {
   Array.from($relays.querySelectorAll('tr'))
