@@ -33,7 +33,6 @@ function updateAll (elapsedMs) {
     const speed = elapsedMs ? totalTermCount[relay] / elapsedMs : undefined
     display(
       relay,
-      totalTermCount[relay] / noteCount[relay],
       speed,
       tfIdf)
   }

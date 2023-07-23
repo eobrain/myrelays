@@ -10,20 +10,17 @@ export const getRelayCount = () => relayCount
 export function createRelayId (relay) {
   ++relayCount
   ids[relay] = {
-    count: `notes${relayCount}`,
     avoid: `avoid${relayCount}`,
     vibe: `vibe${relayCount}`
   }
 }
 
-export function display (relay, count, speed, tfIdf) {
+export function display (relay, speed, tfIdf) {
   const vibe = tfIdf.sort((a, b) => b[1] - a[1]).slice(0, WORDS_TO_DISPLAY).map(([term]) => term).join(' ')
   const tfIdfDictionary = Object.fromEntries(tfIdf)
-  count = Math.round(count)
   speed = Math.round(speed * 10)
   const id = ids[relay]
   const $vibe = document.getElementById(id.vibe)
-  const $count = document.getElementById(id.count)
   const $avoidScore = document.getElementById(id.avoid)
 
   const wordsToAvoid = $avoid.value.split(/\W+/).filter(w => w)
@@ -37,14 +34,13 @@ export function display (relay, count, speed, tfIdf) {
     avoidScore = Math.round(100000 * avoidScore / wordsToAvoid.length)
   }
   if ($vibe) {
-    $count.innerHTML = count
     $avoidScore.innerHTML = avoidScore
     $vibe.innerHTML = vibe
   } else {
+    const domain = relay.replace(/^wss:\/\//, '')
     $relays.insertAdjacentHTML('beforeend',
       `<tr>
-        <th>${relay}</th>
-        <td id=${id.count}>${count}</td>
+        <th><a href="https://nostr.watch/relay/${domain}">${domain}</a></th>
         <td>${speed !== undefined && !Number.isNaN(speed) ? speed : ''}</td>
         <td id=${id.avoid}>${avoidScore}</td>
         <td id=${id.vibe}>${vibe}</td></tr>`)
