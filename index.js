@@ -41,8 +41,7 @@ function updateAll (elapsedMs) {
 
 function isUrl (term) {
   try {
-    new URL(term)
-    return true
+    return !!new URL(term)
   } catch (e) {
     return false
   }
