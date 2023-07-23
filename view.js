@@ -45,7 +45,7 @@ export function display (relay, count, speed, tfIdf) {
       `<tr>
         <th>${relay}</th>
         <td id=${id.count}>${count}</td>
-        <td>${speed !== undefined ? speed : ''}</td>
+        <td>${speed !== undefined && !Number.isNaN(speed) ? speed : ''}</td>
         <td id=${id.avoid}>${avoidScore}</td>
         <td id=${id.vibe}>${vibe}</td></tr>`)
   }
