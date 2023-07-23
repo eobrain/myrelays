@@ -31,8 +31,10 @@ function updateAll (elapsedMs) {
     const tfIdf = Object.entries(termCounts[relay]).map(([term, count]) =>
       [term, (count / totalTermCount[relay]) * inverseDocumentFrequency(term)])
     const speed = elapsedMs ? totalTermCount[relay] / elapsedMs : undefined
+    const domain = relay.replace(/^wss:\/\//, '')
     display(
       relay,
+      domain,
       speed,
       tfIdf)
   }

@@ -15,7 +15,7 @@ export function createRelayId (relay) {
   }
 }
 
-export function display (relay, speed, tfIdf) {
+export function display (relay, domain, speed, tfIdf) {
   const vibe = tfIdf.sort((a, b) => b[1] - a[1]).slice(0, WORDS_TO_DISPLAY).map(([term]) => term).join(' ')
   const tfIdfDictionary = Object.fromEntries(tfIdf)
   speed = Math.round(speed * 10)
@@ -37,7 +37,6 @@ export function display (relay, speed, tfIdf) {
     $avoidScore.innerHTML = avoidScore
     $vibe.innerHTML = vibe
   } else {
-    const domain = relay.replace(/^wss:\/\//, '')
     $relays.insertAdjacentHTML('beforeend',
       `<tr>
         <th><a href="https://nostr.watch/relay/${domain}">${domain}</a></th>
