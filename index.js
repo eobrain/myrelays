@@ -49,12 +49,17 @@ function isUrl (term) {
   }
 }
 
+const isUninteresting = term =>
+  term.length > 50 ||
+  term.match(/utm_source=/) ||
+  isUrl(term)
+
 function getTextNote (relay, content) {
   ++noteCount[relay]
   const terms = content.split(/[\s【】!()[\]{};'",?<>|#]+/).filter(w => w)
   // const terms = content.split(/\W+/).filter(w => w)
   for (let term of terms) {
-    if (term.length > 50 || isUrl(term)) {
+    if (isUninteresting(term)) {
       continue
     }
     ++totalTermCount[relay]
