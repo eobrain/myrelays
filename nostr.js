@@ -3,12 +3,18 @@ const shuffle = xs => xs
   .sort((a, b) => a.sort - b.sort)
   .map(({ x }) => x)
 
+export const wellKnownRelays = shuffle([
+  'wss://relay.nostr.band/'
+])
+
+/** Currently broken 2023-08-06
 export const nostrWatchRelays = async () =>
   shuffle(
     (await (
       (await fetch('https://api.nostr.watch/v1/public')
       ).json())
     ).slice(0, 20))
+*/
 
 /* global WebSocket crypto */
 

@@ -1,4 +1,4 @@
-import { nostrWatchRelays, getEvents, closeSockets } from './nostr.js'
+import { wellKnownRelays, getEvents, closeSockets } from './nostr.js'
 import { createRelayId, display, getRelayCount, onFreeze } from './view.js'
 
 const documentsContainingTerm = new Map()
@@ -10,6 +10,7 @@ function documentContainsTerm (relay, term) {
   }
 }
 
+// See https://en.wikipedia.org/wiki/Tf-idf
 /** Standard IDF */
 // const inverseDocumentFrequency = (term) =>
 //  Math.log(getRelayCount() / documentsContainingTerm.get(term).size)
@@ -126,8 +127,8 @@ function getRecommendServer (relay, content) {
   connectToRelay(content)
 }
 
-// See https://en.wikipedia.org/wiki/Tf-idf
-for (const relay of await nostrWatchRelays()) {
+// for (const relay of await nostrWatchRelays()) {
+for (const relay of wellKnownRelays) {
   connectToRelay(relay)
 }
 
